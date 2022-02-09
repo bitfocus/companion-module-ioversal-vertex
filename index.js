@@ -23,7 +23,7 @@ instance.prototype.init = function () {
 
 	debug = self.debug;
 	log = self.log;
-	self.init_variables();
+	self.initVariables();
 	self.init_tcp();
 };
 
@@ -31,7 +31,7 @@ instance.prototype.updateConfig = function (config) {
 	var self = this;
 	self.config = config;
 	self.init_tcp();
-	self.init_variables();
+	self.initVariables();
 };
 
 instance.prototype.init_tcp = function () {
@@ -64,12 +64,12 @@ instance.prototype.init_tcp = function () {
 		});
 
 		self.socket.on('data', function (data) {
-			self.process_incoming_data(data);
+			self.processIncomingData(data);
 		});
 	}
 };
 
-instance.prototype.process_incoming_data = function (data) {
+instance.prototype.processIncomingData = function (data) {
 	var self = this;
 	self.log('debug', "Data received: " + data);
 	try {
@@ -138,11 +138,19 @@ instance.prototype.actions = function (system) {
 		'play': {
 			label: 'Play',
 			options: [{
-				type: 'textinput',
+				type: 'number',
 				label: 'Playback Id',
 				id: 'id',
 				default: '1',
-				regex: self.REGEX_NUMBER
+			}]
+		},
+		'stop': {
+			label: 'Stop',
+			options: [{
+				type: 'number',
+				label: 'Playback Id',
+				id: 'id',
+				default: '1',
 			}]
 		},
 		'pause': {
@@ -157,6 +165,17 @@ instance.prototype.actions = function (system) {
 		},
 		'poll': {
 			label: 'Poll',
+			options: [
+				{
+					type: 'textinput',
+					label: 'Target',
+					id: 'target',
+					default: 'Playback1'
+				},
+			]
+		},
+		'update_polling_target': {
+			label: 'Update polling target',
 			options: [
 				{
 					type: 'textinput',
@@ -201,17 +220,21 @@ instance.prototype.action = function (action) {
 		case 'play':
 			cmd = 'Playback' + action.options.id + '.Play';
 			break;
+		case 'stop':
+			cmd = 'Playback' + action.options.id + '.Stop';
+			break;
 		case 'pause':
 			cmd = 'Playback' + action.options.id + '.Pause';
 			break;
 		case 'poll':
-			self.pollingTarget = action.options.target;
-			self.setVariable('polling_target', self.pollingTarget);
+			self.updatePollingTarget(action.options.target);
 			cmd = 'return CompanionRequest ' + self.pollingTarget;
 			break;
+		case 'update_polling_target':
+			self.updatePollingTarget(action.options.target);
+			break;
 		case 'start_timer':
-			self.pollingTarget = action.options.target;
-			self.setVariable('polling_target', self.pollingTarget);
+			self.updatePollingTarget(action.options.target);
 			self.startPollingTimer(action.options.interval);
 			break;
 		case 'stop_timer':
@@ -221,14 +244,20 @@ instance.prototype.action = function (action) {
 
 	if (cmd !== undefined) {
 
-		if (self.ensure_connection()) {
+		if (self.ensureConnection()) {
 			self.log('debug', "sending " + cmd + " to " + self.config.host);
 			self.socket.send(cmd + "\r\n");
 		}
 	}
 };
 
-instance.prototype.poll = function (){
+instance.prototype.updatePollingTarget = function (target) {
+	var self = this;
+	self.pollingTarget = target;
+	self.setVariable('polling_target', target);
+}
+
+instance.prototype.poll = function () {
 	var self = this;
 	self.socket.send('return CompanionRequest ' + self.pollingTarget + "\r\n");
 }
@@ -237,7 +266,7 @@ instance.prototype.startPollingTimer = function (interval) {
 	var self = this;
 	clearInterval(self.pollingTimer);
 	self.pollingTimer = setInterval(function () {
-		
+
 		self.poll();
 
 	}, interval);
@@ -249,7 +278,7 @@ instance.prototype.stopPollingTimer = function (interval) {
 	clearInterval(self.pollingTimer);
 }
 
-instance.prototype.ensure_connection = function () {
+instance.prototype.ensureConnection = function () {
 	self = this;
 	if (self.socket === undefined) {
 		self.init_tcp();
@@ -262,7 +291,7 @@ instance.prototype.ensure_connection = function () {
 	}
 };
 
-instance.prototype.init_variables = function () {
+instance.prototype.initVariables = function () {
 	var self = this;
 	log('debug', "initializing variables");
 	var variables = [
