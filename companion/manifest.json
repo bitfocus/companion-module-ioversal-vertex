@@ -3,7 +3,7 @@
 	"name": "ioversal-vertex",
 	"shortname": "Vertex",
 	"description": "Vertex Next Generation AV Production Suite plugin for Companion",
-	"version": "0.0.0",
+	"version": "0.0.3",
 	"license": "MIT",
 	"repository": "git+https://github.com/bitfocus/companion-module-ioversal-vertex.git",
 	"bugs": "https://github.com/bitfocus/companion-module-ioversal-vertex/issues",
