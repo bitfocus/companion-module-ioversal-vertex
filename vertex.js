@@ -10,7 +10,9 @@ class vertexInstance extends InstanceBase {
 	async init(config) {
 		this.config = config
 
-		this.init_tcp()
+		this.initTcp()
+
+		this.initVariable
 
 		this.updateStatus('ok')
 
@@ -52,23 +54,23 @@ class vertexInstance extends InstanceBase {
 	updateActions() {
 		const actions = {}
 		var self = this
+		var cmd
 
-		var playbackOptions = { type: 'number', label: 'Playback Id', id: 'id', default: '1', };
+		var playbackOptions = { type: 'number', label: 'Playback Id', id: 'id', default: '1', }
 		var scriptOptions = { type: 'textinput', label: 'Script', id: 'script', default: '',}
-		var cueOptions = { type: 'number', label: 'Cue Id', id: 'cueId', default: '1', };
-		var preloadTimeOptions = { type: 'number', label: 'Preload Time', id: 'preloadTime', default: '1', };
-		var fadeTimeOptions = { type: 'number', label: 'Fade Time', id: 'fadeTime', default: '1', };
-		var targetOptions = { type: 'textinput', label: 'Target', id: 'target', default: 'Playback1' };
-		var intervalOptions = { type: 'number', label: 'Interval ms', id: 'interval', default: 100 };
-
-		var playback = 'Playback' + action.options.id
-		var cueId = actions.options.cueId
+		var cueOptions = { type: 'number', label: 'Cue Id', id: 'cueId', default: '1', }
+		var preloadTimeOptions = { type: 'number', label: 'Preload Time', id: 'preloadTime', default: '1', }
+		var fadeTimeOptions = { type: 'number', label: 'Fade Time', id: 'fadeTime', default: '1', }
+		var targetOptions = { type: 'textinput', label: 'Target', id: 'target', default: 'Playback1' }
+		var intervalOptions = { type: 'number', label: 'Interval ms', id: 'interval', default: 100 }
 
 		actions['script'] = {
 			name: 'Run Script',
 			options: [playbackOptions, scriptOptions],
 			callback: (action) => {
 				cmd = action.options.script
+				self.log('debug', "run vertex action: " + action)
+				self.sendCmd(cmd)
 			}
 		}
 		
@@ -76,50 +78,72 @@ class vertexInstance extends InstanceBase {
 			name: 'Play',
 			options: [playbackOptions],
 			callback: (action) => {
+				var playback = 'Playback' + action.options.id
 				cmd = self.buildCommand(playback, 'Play')
+				self.log('debug', "run vertex action: " + action.actionId)
+				self.sendCmd(cmd)
 			}
 		}
 		actions['pause'] = {
 			name: 'Pause',
 			options: [playbackOptions],
 			callback: (action) => {
+				var playback = 'Playback' + action.options.id
 				cmd = self.buildCommand(playback, 'Pause')
+				self.log('debug', "run vertex action: " + action)
+				self.sendCmd(cmd)
 			}
 		}
 		actions['stop'] = {
 			name: 'Stop',
 			options: [playbackOptions],
 			callback: (action) => {
+				var playback = 'Playback' + action.options.id
 				cmd = self.buildCommand(playback, 'Stop')
+				self.log('debug', "run vertex action: " + action)
+				self.sendCmd(cmd)
 			}
 		}
 		actions['goToCue'] = {
 			name: 'Go to Cue',
 			options: [playbackOptions, cueOptions],
 			callback: (action) => {
+				var playback = 'Playback' + action.options.id
+				var cueId = actions.options.cueId
 				cmd = self.buildCommand(playback, 'GotoCue', cueId)
+				self.log('debug', "run vertex action: " + action)
+				self.sendCmd(cmd)
 			}
 		}
 		actions['fadeToCue'] = {
 			name: 'Fade to Cue',
 			options: [playbackOptions, cueOptions, preloadTimeOptions, fadeTimeOptions],
 			callback: (action) => {
+				var playback = 'Playback' + action.options.id
+				var cueId = actions.options.cueId
 				cmd = self.buildCommand(playback, 'FadeToCue', [cueId, action.options.preloadTime, action.options.fadeTime])
-				
+				self.log('debug', "run vertex action: " + action)
+				self.sendCmd(cmd)
 			}
 		}
 		actions['gotoNextCue'] = {
 			name: 'Go to Next Cue',
 			options: [playbackOptions],
 			callback: (action) => {
+				var playback = 'Playback' + action.options.id
 				cmd = self.buildCommand(playback, 'GotoNextCue')
+				self.log('debug', "run vertex action: " + action)
+				self.sendCmd(cmd)
 			}
 		}
 		actions['gotoPreviousCue'] = {
 			name: 'Go to Previous Cue',
 			options: [playbackOptions],
 			callback: (action) => {
+				var playback = 'Playback' + action.options.id
 				cmd = self.buildCommand(playback, 'GotoPreviousCue')
+				self.log('debug', "run vertex action: " + action)
+				self.sendCmd(cmd)
 			}
 		}
 		actions['poll'] = {
@@ -128,6 +152,8 @@ class vertexInstance extends InstanceBase {
 			callback: (action) => {
 				self.updatePollingTarget(action.options.target);
 				cmd = 'return CompanionRequest ' + self.pollingTarget;
+				self.log('debug', "run vertex action: " + action)
+				self.sendCmd(cmd)
 			}
 		}
 		actions['update_polling_target'] = {
@@ -135,6 +161,8 @@ class vertexInstance extends InstanceBase {
 			options: [targetOptions],
 			callback: (action) => {
 				self.updatePollingTarget(action.options.target);
+				self.log('debug', "run vertex action: " + action)
+				self.sendCmd(cmd)
 			}
 		}
 		actions['start_timer'] = {
@@ -143,6 +171,8 @@ class vertexInstance extends InstanceBase {
 			callback: (action) => {
 				self.updatePollingTarget(action.options.target);
 				self.startPollingTimer(action.options.interval);
+				self.log('debug', "run vertex action: " + action)
+				self.sendCmd(cmd)
 			}
 		}
 		actions['stop_timer'] = {
@@ -150,15 +180,25 @@ class vertexInstance extends InstanceBase {
 			options: [],
 			callback: (action) => {
 					self.stoPollingTimer()
+					self.log('debug', "run vertex action: " + action)
 				}
 		}
 
-		if (cmd !== undefined) {
+		this.setActionDefinitions(actions)
+	}
+
+	sendCmd(command) {
+		var self = this
+		if (command !== undefined) {
 
 			if (self.ensureConnection()) {
-				self.log('debug', "sending " + cmd + " to " + self.config.host);
-				self.socket.send(cmd + "\r\n");
+				self.log('debugg', "sending " + command + " to " + self.config.host);
+				self.socket.send(command + "\r\n");
+			} else {
+				self.log('debug', "not connected to host")
 			}
+		} else {
+			self.log('debug', "no command")
 		}
 	}
 	
@@ -168,7 +208,7 @@ class vertexInstance extends InstanceBase {
 		self.setVariable('polling_target', target);
 	}
 
-	poll = function () {
+	poll() {
 		var self = this;
 		self.socket.send('return CompanionRequest ' + self.pollingTarget + "\r\n");
 	}
@@ -189,7 +229,7 @@ class vertexInstance extends InstanceBase {
 		clearInterval(self.pollingTimer);
 	}
 
-	init_tcp() {
+	initTcp() {
 		var self = this;
 
 		if (self.socket !== undefined) {
