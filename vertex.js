@@ -1,13 +1,16 @@
-const { InstanceBase, Regex, runEntrypoint } = require('@companion-module/base')
+const { InstanceBase, InstanceStatus, Regex, runEntrypoint, TCPHelper } = require('@companion-module/base')
 const UpgradeScripts = require('./upgrades')
 
 class vertexInstance extends InstanceBase {
+	status = InstanceStatus
 	constructor(internal) {
 		super(internal)
 	}
 
 	async init(config) {
 		this.config = config
+
+		this.init_tcp()
 
 		this.updateStatus('ok')
 
@@ -50,19 +53,18 @@ class vertexInstance extends InstanceBase {
 		if (self.config.host) {
 			var port = 50009;
 
-			self.socket = new tcp(self.config.host, port);
+			self.socket = new TCPHelper(self.config.host, port);
 
 			self.socket.on('status_change', function (status, message) {
-				self.status(status, message);
+				self.status.Ok;
 			});
 
 			self.socket.on('error', function (err) {
-				debug("Network error", err);
 				self.log('error', "Network error: " + err.message);
 			});
 
 			self.socket.on('connect', function () {
-				debug("Connected");
+				self.log("Connected");
 				if (self.config.type === 'disp') {
 					self.socket.send('authenticate 1\r\n');
 				}
