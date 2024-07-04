@@ -1,28 +1,11 @@
 {
 	"name": "ioversal-vertex",
 	"version": "0.0.3",
-	"api_version": "1.0.0",
-	"keywords": [
-		"Media Server",
-		"Software",
-		"Video",
-		"Multi System Playout",
-		"Interactive Show Control"
-	],
-	"manufacturer": "ioversal",
-	"product": "Vertex",
-	"shortname": "Vertex",
-	"description": "Vertex Next Generation AV Production Suite plugin for Companion",
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
-	"author": "Manuel Riviere <manuel@ioversal.com>",
 	"license": "MIT",
-	"homepage": "https://github.com/bitfocus/companion-module-ioversal-vertex#readme",
-	"bugs": {
-		"url": "https://github.com/bitfocus/companion-module-ioversal-vertex/issues"
-	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/bitfocus/companion-module-ioversal-vertex.git"
