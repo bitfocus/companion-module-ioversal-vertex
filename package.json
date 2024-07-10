@@ -3,13 +3,15 @@
 	"version": "1.0.0",
 	"main": "vertex.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"build": "tsc -p ./tsconfig.json"
 	},
 	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/bitfocus/companion-module-ioversal-vertex.git"
 	},
+	"type": "module",
 	"dependencies": {
 		"@companion-module/base": "~1.8.0"
 	},
