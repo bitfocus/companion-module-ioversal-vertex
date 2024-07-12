@@ -177,6 +177,7 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 				options: [targetOptions, intervalOptions],
 				callback: action => {
 					self.updatePollingTarget(action.options.target);
+					// TODO: fix this by handling `undefined` gracefully
 					// self.startPollingTimer(action.options.interval);
 					self.log('debug', "run vertex action: " + action)
 					self.sendCmd(cmd)
@@ -309,6 +310,7 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 		let targetType = targetData['Type'];
 		let targetVariableNames = self.variableNames[targetType];
 		if (targetVariableNames == null) return;
+		// TODO: rewrite this in a way to harnes the new capabilities of `setVariableValues` efficiently
 		// targetVariableNames.forEach((varName: any) => {
 		// 	self.setVariableValues({
 		// 		self.buildVarName(targetType, varName): targetData[varName],
