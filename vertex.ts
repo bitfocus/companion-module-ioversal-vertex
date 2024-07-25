@@ -9,7 +9,7 @@ import {
 	 SomeCompanionConfigField,
 	 TCPHelper
 	 } from '@companion-module/base';
-import { UpgradeScripts } from './upgrades.js';
+import { getUpgrades } from './upgrades.js';
 
 export interface ConnectionConfig {
     host: string;
@@ -365,4 +365,4 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 
 };
 
-runEntrypoint(vertexInstance, UpgradeScripts)
+runEntrypoint(vertexInstance, getUpgrades)
