@@ -60,13 +60,13 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 		var self = this
 		var cmd: string
 
-		const playbackOptions: CompanionInputFieldNumber = { type: 'number', label: 'Playback Id', id: 'id', default: 1, min: 0, max: 0 };
+		const playbackOptions: CompanionInputFieldNumber = { type: 'number', label: 'Playback Id', id: 'id', default: 1, min: 0, max: Number.MAX_SAFE_INTEGER };
 		const scriptOptions: CompanionInputFieldTextInput = { type: 'textinput', label: 'Script', id: 'script', default: '',};
-		const cueOptions: CompanionInputFieldNumber = { type: 'number', label: 'Cue Id', id: 'cueId', default: 1, min: 0, max: 0 };
-		const preloadTimeOptions: CompanionInputFieldNumber = { type: 'number', label: 'Preload Time', id: 'preloadTime', default: 1, min: 0, max: 0 };
-		const fadeTimeOptions: CompanionInputFieldNumber = { type: 'number', label: 'Fade Time', id: 'fadeTime', default: 1, min: 0, max: 0 };
+		const cueOptions: CompanionInputFieldNumber = { type: 'number', label: 'Cue Id', id: 'cueId', default: 1, min: 0, max: Number.MAX_SAFE_INTEGER };
+		const preloadTimeOptions: CompanionInputFieldNumber = { type: 'number', label: 'Preload Time', id: 'preloadTime', default: 1, min: 0, max: Number.MAX_SAFE_INTEGER };
+		const fadeTimeOptions: CompanionInputFieldNumber = { type: 'number', label: 'Fade Time', id: 'fadeTime', default: 1, min: 0, max: Number.MAX_SAFE_INTEGER };
 		const targetOptions: CompanionInputFieldTextInput = { type: 'textinput', label: 'Target', id: 'target', default: 'Playback1' };
-		const intervalOptions: CompanionInputFieldNumber = { type: 'number', label: 'Interval ms', id: 'interval', default: 100, min: 0, max: 0 };
+		const intervalOptions: CompanionInputFieldNumber = { type: 'number', label: 'Interval ms', id: 'interval', default: 100, min: 0, max: Number.MAX_SAFE_INTEGER };
 
 			const actions: CompanionActionDefinitions = {
 			['script']: {
@@ -177,8 +177,9 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 				options: [targetOptions, intervalOptions],
 				callback: action => {
 					self.updatePollingTarget(action.options.target);
-					// TODO: fix this by handling `undefined` gracefully
-					// self.startPollingTimer(action.options.interval);
+					if (action.options.interval) {
+						self.startPollingTimer(action.options.interval);
+					}
 					self.log('debug', "run vertex action: " + action)
 					self.sendCmd(cmd)
 				}
@@ -224,9 +225,13 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 		}
 	}
 
-	startPollingTimer(interval: number) {
+	// type `any` is kind of hacky but being specific came with type conversion hassle
+	startPollingTimer(interval: any) {
 		var self = this;
 		clearInterval(self.pollingTimer);
+		if (typeof interval == 'string') {
+			interval = parseFloat(interval);
+		};
 		self.pollingTimer = setInterval(function () {
 
 			self.poll();
