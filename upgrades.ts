@@ -7,14 +7,26 @@ export const UpgradeScripts: CompanionStaticUpgradeScript<ConnectionConfig>[] = 
         updatedFeedbacks,
 ]
 function updatedConfig(_context: CompanionUpgradeContext<ConnectionConfig>, _props: CompanionStaticUpgradeProps<ConnectionConfig>): CompanionStaticUpgradeResult<ConnectionConfig> {
-    throw new Error('Function not implemented.')
+    return {
+        updatedConfig: null,
+        updatedActions: [],
+        updatedFeedbacks: [],
+    };
 }
 
 function updatedActions(_context: CompanionUpgradeContext<ConnectionConfig>, _props: CompanionStaticUpgradeProps<ConnectionConfig>): CompanionStaticUpgradeResult<ConnectionConfig> {
-    throw new Error('Function not implemented.')
+    return {
+        updatedConfig: null,
+        updatedActions: [],
+        updatedFeedbacks: [],
+    };
 }
 
 function updatedFeedbacks(_context: CompanionUpgradeContext<ConnectionConfig>, _props: CompanionStaticUpgradeProps<ConnectionConfig>): CompanionStaticUpgradeResult<ConnectionConfig> {
-    throw new Error('Function not implemented.')
+    return {
+        updatedConfig: null,
+        updatedActions: [],
+        updatedFeedbacks: [],
+    };
 }
 
