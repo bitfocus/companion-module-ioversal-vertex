@@ -27,6 +27,12 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 	}
 
 	async init(config: ConnectionConfig) {
+		// TODO: clean this up with a refactor
+		this.variableNames = {
+			"Playback":
+				["TimeCode", "RemainingTimeCode", "RemainingCueTime", "CueTime", "NextCue", "CurrentOrLastCue",]
+		};
+		
 		this.config = config
 
 		this.initTcp()
@@ -177,6 +183,7 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 				options: [targetOptions, intervalOptions],
 				callback: action => {
 					self.updatePollingTarget(action.options.target);
+					cmd = 'return CompanionRequest ' + self.pollingTarget;
 					if (action.options.interval) {
 						self.startPollingTimer(action.options.interval);
 					}
@@ -315,12 +322,12 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 		let targetType = targetData['Type'];
 		let targetVariableNames = self.variableNames[targetType];
 		if (targetVariableNames == null) return;
-		// TODO: rewrite this in a way to harnes the new capabilities of `setVariableValues` efficiently
-		// targetVariableNames.forEach((varName: any) => {
-		// 	self.setVariableValues({
-		// 		self.buildVarName(targetType, varName): targetData[varName],
-		// 	});
-		// });
+		targetVariableNames.forEach((varName: any) => {
+			self.setVariableValues({
+				[this.buildVarName(targetType, varName)]: targetData[varName],
+			});
+		});
+		
 	}
 
 	initVariable() {
