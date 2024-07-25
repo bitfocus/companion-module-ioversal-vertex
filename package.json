@@ -1,10 +1,18 @@
 {
 	"name": "ioversal-vertex",
 	"version": "1.0.0",
-	"main": "vertex.js",
+	"main": "dist/vertex.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"build": "tsc -p ./tsconfig.json"
+		"prepare": "husky install",
+		"dev": "yarn build:watch",
+		"build": "tsc -p ./tsconfig.json",
+		"build:main": "tsc -p tsconfig.json",
+		"build:watch": "tsc -p tsconfig.json --watch",
+		"lint:raw": "eslint --ext .ts --ext .js --ignore-pattern dist",
+		"lint": "yarn lint:raw .",
+		"lint-fix": "yarn lint --fix",
+		"license-validate": "yarn sofie-licensecheck",
+		"postinstall": "yarn build"
 	},
 	"license": "MIT",
 	"repository": {
@@ -16,7 +24,19 @@
 		"@companion-module/base": "~1.8.0"
 	},
 	"devDependencies": {
-		"@companion-module/tools": "^1.5.1"
+		"@companion-module/tools": "^1.5.1",
+		"@types/node": "^18.14.0",
+		"@types/superagent": "4.1.16",
+		"@types/urijs": "1.19.19",
+		"@types/ws": "^8.5.4",
+		"@typescript-eslint/eslint-plugin": "^5.53.0",
+		"@typescript-eslint/parser": "^5.53.0",
+		"eslint": "^8.34.0",
+		"eslint-plugin-prettier": "^4.0.0",
+		"husky": "^7.0.4",
+		"lint-staged": "^13.1.2",
+		"prettier": "^2.8.4",
+		"typescript": "~5.4.5"
 	},
 	"packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
