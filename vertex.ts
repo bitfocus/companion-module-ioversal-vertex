@@ -17,22 +17,20 @@ export interface ConnectionConfig {
 
 class vertexInstance extends InstanceBase<ConnectionConfig> {
 	status = InstanceStatus
-    config: ConnectionConfig | undefined
-    pollingTarget: any
-    variableNames: any
-    socket: TCPHelper | undefined
-    pollingTimer: any | undefined
+  config!: ConnectionConfig;
+  pollingTarget: any
+  socket: TCPHelper | undefined
+  pollingTimer: any
+	variableNames: any  = {
+		"Playback":
+		["TimeCode", "RemainingTimeCode", "RemainingCueTime", "CueTime", "NextCue", "CurrentOrLastCue",]
+	};
+	
 	constructor(internal: unknown) {
 		super(internal)
 	}
 
 	async init(config: ConnectionConfig) {
-		// TODO: clean this up with a refactor
-		this.variableNames = {
-			"Playback":
-				["TimeCode", "RemainingTimeCode", "RemainingCueTime", "CueTime", "NextCue", "CurrentOrLastCue",]
-		};
-		
 		this.config = config
 
 		this.initTcp()
@@ -277,8 +275,9 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 				self.log('info', "Connected");
 				// TODO: what was this even doing?
 				// if (self.config.type === 'disp') {
-				// 	self.socket.send('authenticate 1\r\n');
-				// }
+				if (self.socket) {
+					self.socket.send('authenticate 1\r\n');
+				}
 			});
 
 			self.socket.on('data', function (data) {
