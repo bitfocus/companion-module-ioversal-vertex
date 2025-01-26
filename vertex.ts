@@ -373,17 +373,6 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 					label: 'Vertex Instance IP',
 					width: 6,
 					regex: Regex.IP
-				},
-				{
-					type: 'number',
-					id: 'interval',
-					label: 'Polling Interval (msec)',
-					default: 500,
-					min: 100,
-					max: 5000,
-					step: 100,
-					range: true,
-					width: 6
 				}
 		]
 	}
