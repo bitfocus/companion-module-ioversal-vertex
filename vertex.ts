@@ -165,7 +165,7 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 				options: [playbackOptions],
 				callback: action => {
 					var playback = 'Playback' + action.options.id
-					cmd = self.buildCommand(playback, 'GotoPreviousCue')
+					cmd = self.buildCommand(playback, 'GotoPrevCue')
 					self.log('debug', "run vertex action: " + action)
 					self.sendCmd(cmd)
 				}
