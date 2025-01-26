@@ -1,14 +1,14 @@
 import {
-	 CompanionActionDefinitions,
-	 CompanionInputFieldNumber,
-	 CompanionInputFieldTextInput,
-	 InstanceBase,
-	 InstanceStatus,
-	 Regex,
-	 runEntrypoint,
-	 SomeCompanionConfigField,
-	 TCPHelper
-	 } from '@companion-module/base';
+	CompanionActionDefinitions,
+	CompanionInputFieldNumber,
+	CompanionInputFieldTextInput,
+	InstanceBase,
+	InstanceStatus,
+	Regex,
+	runEntrypoint,
+	SomeCompanionConfigField,
+	TCPHelper
+} from '@companion-module/base';
 import { getUpgrades } from './upgrades.js';
 
 export interface ConnectionConfig {
@@ -17,10 +17,10 @@ export interface ConnectionConfig {
 
 class vertexInstance extends InstanceBase<ConnectionConfig> {
 	status = InstanceStatus
-  config!: ConnectionConfig;
-  pollingTarget: any
-  socket: TCPHelper | undefined
-  pollingTimer: any
+	config!: ConnectionConfig;
+	pollingTarget: any
+	socket: TCPHelper | undefined
+	pollingTimer: any
 	variableNames: any  = {
 		"Playback":
 		["TimeCode", "RemainingTimeCode", "RemainingCueTime", "CueTime", "NextCue", "CurrentOrLastCue",]
@@ -193,9 +193,9 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 				name: 'Stop Polling Timer',
 				options: [],
 				callback: action => {
-						self.stopPollingTimer()
-						self.log('debug', "run vertex action: " + action)
-					}
+					self.stopPollingTimer()
+					self.log('debug', "run vertex action: " + action)
+				}
 			}
 		}
 
@@ -205,7 +205,6 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 	sendCmd(command: string | undefined) {
 		var self = this
 		if (command && self.config && self.socket) {
-
 			if (self.ensureConnection()) {
 				self.log('debug', "sending " + command + " to " + self.config.host);
 				self.socket.send(command + "\r\n");
@@ -226,7 +225,7 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 	poll() {
 		var self = this;
 		if (self.socket) {
-		self.socket.send('return CompanionRequest ' + self.pollingTarget + "\r\n");
+			self.socket.send('return CompanionRequest ' + self.pollingTarget + "\r\n");
 		}
 	}
 
@@ -238,9 +237,7 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 			interval = parseFloat(interval);
 		};
 		self.pollingTimer = setInterval(function () {
-
 			self.poll();
-
 		}, interval);
 
 	}
