@@ -78,7 +78,7 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 		const actions: CompanionActionDefinitions = {
 			['script']: {
 				name: 'Run Script',
-				options: [playbackOptions, scriptOptions],
+				options: [scriptOptions],
 				callback: action => {
 					if (action.options.script) {
 						cmd = action.options.script.toString()
