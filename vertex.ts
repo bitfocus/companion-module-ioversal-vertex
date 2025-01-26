@@ -37,9 +37,9 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 
 		this.initVariable()
 
-		this.updateStatus(this.status.Ok)
+		this.updateStatus(this.status.Connecting)
 
-		this.updateActions() // export Actions
+		this.updateActions()
 	}
 
 	async destroy() {
@@ -261,20 +261,17 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 			self.socket = new TCPHelper(self.config.host, port);
 
 			self.socket.on('status_change', function (_status: InstanceStatus, _message: any): void {
-				self.status.Ok;
+				self.log('info', "Status Change: " + String(_status));	
 			});
 
 			self.socket.on('error', function (err: { message: string }): void {
-				self.log('error', "Network error: " + err.message);
+				self.log('error', "Error connecting to Vertex API: " + err.message);
+				self.updateStatus(self.status.ConnectionFailure)
 			});
 
 			self.socket.on('connect', function (): void {
-				self.log('info', "Connected");
-				// TODO: what was this even doing?
-				// if (self.config.type === 'disp') {
-				if (self.socket) {
-					self.socket.send('authenticate 1\r\n');
-				}
+				self.log('info', "Connected to Vertex API!");
+				self.updateStatus(self.status.Ok)
 			});
 
 			self.socket.on('data', function (data) {
