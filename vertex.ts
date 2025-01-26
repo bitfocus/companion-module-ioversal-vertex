@@ -87,7 +87,6 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 					self.sendCmd(cmd)
 				}
 			},
-	
 			['play']: {
 				name: 'Play',
 				options: [playbackOptions],
@@ -245,7 +244,6 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 		self.pollingTimer = setInterval(function () {
 			self.poll();
 		}, interval);
-
 	}
 
 	stopPollingTimer() {
