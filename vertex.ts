@@ -37,17 +37,19 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 
 		this.initVariable()
 
-		this.updateStatus(this.status.Connecting)
-
 		this.updateActions()
 	}
 
 	async destroy() {
-		this.log('debug', 'destroy')
+		if (this.socket !== undefined) {
+			this.socket.destroy()
+		}
+		this.log('debug', 'Cleared connection to Vertex API.')
 	}
 
 	async configUpdated(config: ConnectionConfig) {
-		this.config = config
+		this.destroy()
+		this.init(config)
 	}
 
 	buildCommand (target: string, command: string, args?: any | null | undefined) {
