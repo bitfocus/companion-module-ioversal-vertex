@@ -23,7 +23,7 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 	pollingTimer: any
 	variableNames: any  = {
 		"Playback":
-		["TimeCode", "RemainingTimeCode", "RemainingCueTime", "CueTime", "NextCue", "CurrentOrLastCue",]
+		["TimeCode", "RemainingTimeCode", "RemainingCueTime", "CueTime", "NextCue", "CurrentOrLastCue"]
 	};
 	
 	constructor(internal: unknown) {
@@ -31,16 +31,15 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 	}
 
 	async init(config: ConnectionConfig) {
+		// Set config for instance, initialize TCP connection and variables and actions.
 		this.config = config
-
 		this.initTcp()
-
 		this.initVariable()
-
 		this.updateActions()
 	}
 
 	async destroy() {
+		// Check if socket is initialized and destroy it.
 		if (this.socket !== undefined) {
 			this.socket.destroy()
 		}
@@ -48,18 +47,20 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 	}
 
 	async configUpdated(config: ConnectionConfig) {
+		// Destroy the present instance and re-initialize with new config-data.
 		this.destroy()
 		this.init(config)
 	}
 
 	buildCommand (target: string, command: string, args?: any | null | undefined) {
-			var result = target + '.' + command;
-			if (Array.isArray(args)) {
-				result += ' ' + args.join(',');
-			} else if (args != null) {
-				result += ' ' + args.toString();
-			}
-			return result;
+		// Re-write command for the Vertex API.
+		var result = target + '.' + command;
+		if (Array.isArray(args)) {
+			result += ' ' + args.join(',');
+		} else if (args != null) {
+			result += ' ' + args.toString();
+		}
+		return result;
 	}
 
 	updateActions() {
@@ -74,7 +75,7 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 		const targetOptions: CompanionInputFieldTextInput = { type: 'textinput', label: 'Target', id: 'target', default: 'Playback1' };
 		const intervalOptions: CompanionInputFieldNumber = { type: 'number', label: 'Interval ms', id: 'interval', default: 100, min: 0, max: Number.MAX_SAFE_INTEGER };
 
-			const actions: CompanionActionDefinitions = {
+		const actions: CompanionActionDefinitions = {
 			['script']: {
 				name: 'Run Script',
 				options: [playbackOptions, scriptOptions],
@@ -206,29 +207,32 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 
 	sendCmd(command: string | undefined) {
 		var self = this
+
+		// Check if command is set and config is present.
 		if (command && self.config && self.socket) {
+			// Check if connection is present. Sent command to socket.
 			if (self.ensureConnection()) {
 				self.log('debug', "sending " + command + " to " + self.config.host);
 				self.socket.send(command + "\r\n");
 			} else {
-				self.log('debug', "not connected to host")
+				self.log('debug', "Not connected to host")
 			}
 		} else {
-			self.log('debug', "no command")
+			self.log('debug', "No command, configuration or tcp-socket.")
 		}
 	}
 	
-	updatePollingTarget(target: any) {
-		var self = this;
-		self.pollingTarget = target;
-		self.setVariableValues({'polling_target': target,});
-	}
-
 	poll() {
 		var self = this;
 		if (self.socket) {
 			self.socket.send('return CompanionRequest ' + self.pollingTarget + "\r\n");
 		}
+	}
+
+	updatePollingTarget(target: any) {
+		var self = this;
+		self.pollingTarget = target;
+		self.setVariableValues({'polling_target': target});
 	}
 
 	// type `any` is kind of hacky but being specific came with type conversion hassle
@@ -252,30 +256,38 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 	initTcp() {
 		var self = this;
 
+		// Set status to connection failure in the beginning.
+		self.updateStatus(self.status.ConnectionFailure);
+
+		// Destroy socket in case still present.
 		if (self.socket !== undefined) {
 			self.socket.destroy();
 			delete self.socket;
 		}
 
+		// Check if config is set and establish connection.
 		if (self.config && self.config.host) {
 			var port = 50009;
-
 			self.socket = new TCPHelper(self.config.host, port);
 
+			// Log all status changes.
 			self.socket.on('status_change', function (_status: InstanceStatus, _message: any): void {
-				self.log('info', "Status Change: " + String(_status));	
+				self.log('info', "Status Change: " + String(_status));
 			});
 
+			// Update status in case of connection error.
 			self.socket.on('error', function (err: { message: string }): void {
 				self.log('error', "Error connecting to Vertex API: " + err.message);
-				self.updateStatus(self.status.ConnectionFailure)
+				self.updateStatus(self.status.ConnectionFailure);
 			});
 
+			// Update status in case of established connection.
 			self.socket.on('connect', function (): void {
 				self.log('info', "Connected to Vertex API!");
-				self.updateStatus(self.status.Ok)
+				self.updateStatus(self.status.Ok);
 			});
 
+			// Process data on API call.
 			self.socket.on('data', function (data) {
 				self.processIncomingData(data);
 			});
@@ -284,13 +296,16 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 	
 	ensureConnection() {
 		let self = this;
+
+		// Try to reconnect in case connection is not established.
 		if (self.socket === undefined) {
 			self.initTcp();
 		}
+
+		// Check status of connection and return proper value.
 		if (self.socket !== undefined && self.socket.isConnected) {
 			return true;
 		} else {
-			self.log('warn', 'Socket not connected');
 			return false;
 		}
 	}
@@ -298,12 +313,16 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 	processIncomingData(data: string | Buffer) {
 		var self = this;
 		self.log('debug', "Data received: " + data);
+
+		// Try to parse data in JSON format.
 		try {
 			var parsed = JSON.parse(data.toString());
 		} catch (error) {
 			self.log('info', 'Unable to parse incoming data as JSON: ' + data);
 			return;
 		}
+
+		// Iterate through data and set variables.
 		var targets = self.pollingTarget.split(',').map((s: string) => s.trim()).filter(function (e: { trim: () => { (): any; new(): any; length: number } }) { return e.trim().length > 0; });
 		targets.forEach((element: string | number) => {
 			self.setTargetVariables(element, parsed);
@@ -328,6 +347,8 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 	initVariable() {
 		var self = this;
 		this.log('debug', "initializing variables");
+
+		// Definition of variables.
 		var variables = [
 			{
 				name: 'Polling Target',
@@ -335,6 +356,7 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 			}
 		];
 
+		// Iterate through and create all variables.
 		for (const type in self.variableNames) {
 			self.variableNames[type].forEach((value: string) => {
 				variables.push({ name: value + " of selected " + type, variableId: self.buildVarName(type, value) });
@@ -358,7 +380,6 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 	}
 
 	buildVarName(type: string, name: string) { return type + '_' + name; };
-
 };
 
 runEntrypoint(vertexInstance, getUpgrades)
