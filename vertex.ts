@@ -68,7 +68,7 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 		var cmd: string
 
 		const playbackOptions: CompanionInputFieldNumber = { type: 'number', label: 'Playback Id', id: 'id', default: 1, min: 0, max: Number.MAX_SAFE_INTEGER };
-		const scriptOptions: CompanionInputFieldTextInput = { type: 'textinput', label: 'Script', id: 'script', default: '',};
+		const scriptOptions: CompanionInputFieldTextInput = { type: 'textinput', label: 'Script/Command', id: 'script', default: '' };
 		const cueOptions: CompanionInputFieldNumber = { type: 'number', label: 'Cue Id', id: 'cueId', default: 1, min: 0, max: Number.MAX_SAFE_INTEGER };
 		const preloadTimeOptions: CompanionInputFieldNumber = { type: 'number', label: 'Preload Time', id: 'preloadTime', default: 1, min: 0, max: Number.MAX_SAFE_INTEGER };
 		const fadeTimeOptions: CompanionInputFieldNumber = { type: 'number', label: 'Fade Time', id: 'fadeTime', default: 1, min: 0, max: Number.MAX_SAFE_INTEGER };
@@ -77,7 +77,7 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 
 		const actions: CompanionActionDefinitions = {
 			['script']: {
-				name: 'Run Script',
+				name: 'Run Script/Run Command',
 				options: [scriptOptions],
 				callback: action => {
 					if (action.options.script) {
@@ -87,7 +87,7 @@ class vertexInstance extends InstanceBase<ConnectionConfig> {
 					self.sendCmd(cmd)
 				}
 			},
-		
+	
 			['play']: {
 				name: 'Play',
 				options: [playbackOptions],
