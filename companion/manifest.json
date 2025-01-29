@@ -3,7 +3,7 @@
 	"name": "ioversal-vertex",
 	"shortname": "Vertex",
 	"description": "Vertex Next Generation AV Production Suite plugin for Companion",
-	"version": "0.0.0",
+	"version": "1.1.0",
 	"license": "MIT",
 	"repository": "git+https://github.com/bitfocus/companion-module-ioversal-vertex.git",
 	"bugs": "https://github.com/bitfocus/companion-module-ioversal-vertex/issues",
@@ -11,6 +11,10 @@
 		{
 			"name": "Manuel Riviere",
 			"email": "manuel@ioversal.com"
+		},
+		{
+			"name": "Jan Gilla",
+			"email": "jgilla@level66.network"
 		}
 	],
 	"legacyIds": [],
